@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quick JS Projects: News Aggregator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <script src="key.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <style>
+            #header, #footer{
+                height: 30px;
+                width: 100%;
+                text-align: center;
+            }
+            
+            #footer{
+                position: fixed;
+                bottom: 0px;
+            }
+            
+            .wrap {
+                white-space: normal !important;
+            }
+            
+            #detImg img{
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div data-role="page" id="master"> 
+	       <div data-role="header" id="header">Business News</div> 
+	       <div data-role="content"><h1>Business News</h1></div> 
+            <div id="stories">
+                <ul id="storyList" data-role="listview"></ul>
+            </div>
+	       <div data-role="footer" id="footer">&copy; 2020 Framework Television</div> 
+        </div> 
+        
+        <!--- Detail Page -->
+        
+        <div data-role="page" id="detail"> 
+	       <div data-role="header" id="header">Business News</div> 
+	       <div data-role="content">
+                <div id="detTitle"></div>
+                <div id="detInfo"></div>
+                <div id="detImg"></div>
+                <div id="detStory"></div>
+                <div id="fullStoryLink"></div>
+               <a href="#master"><button>All Stories</button></a>
+           </div>
+	       <div data-role="footer" id="footer">&copy; 2020 Framework Television</div> 
+        </div> 
+        
+        <script>
+            let url = "http://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=" + key;
+            let out = "";
+            let articles = [];
+            $.getJSON(url, function(data){
+                console.log(data);
+                articles = data.articles;
+                for(let x =0; x < articles.length; x++) {
+                    displayStory(articles[x],x);
+                    $("#storyList").html(out);
+                    $("#storyList").listview("refresh");
+                }
+            });
+            
+            function displayStory(story,storyNum){
+                const number = storyNum;
+                const title = story.title;
+                const source = story.source.name;
+                const image = story.urlToImage;
+                const storyTime = story.publishedAt;
+                const description = story.description;
+                
+                out += "<li onclick='populateDetail(" + number + ")' class='wrap'>";
+                out += "<a href='#detail'>";
+                out += "<img src='" + image + "'/>";
+                out += "<strong>" + title + "</strong>";
+                out += "<br/>" + storyTime + " | " + source;
+                out += "<p class='wrap'>" + description + "</p>"
+                out += "</a></li>";
+                
+                
+            }
+            
+            function populateDetail(storyNum)
+            {
+                const story = articles[storyNum];
+                console.log(story);
+                $('#detTitle').html("<h1>" + story.title + "</h1>");
+                $('#detInfo').html(story.name + " | " + story.publishedAt);
+                $('#detImg').html("<img src='" + story.urlToImage + "'/>");
+                $('#detStory').html("<p>" + story.content + "</p>");
+                $('#fullStoryLink').html("<a href='" + story.url + "'>Full Story</a>");
+            }
+        </script>
+    </body>
+</html>
